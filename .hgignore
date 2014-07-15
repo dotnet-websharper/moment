@@ -1,0 +1,6 @@
+(bin|obj)/(Debug|Release)
+[.]build
+[.](suo|user)$
+^build/
+^packages/
+^tools/packages/
