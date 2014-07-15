@@ -1,4 +1,4 @@
-﻿namespace IntelliFactory.WebSharper.GlMatrix.Tests
+﻿namespace IntelliFactory.WebSharper.Moment.Tests
 
 open IntelliFactory.WebSharper
 
@@ -9,9 +9,9 @@ module Main =
 
     let Sample (lang:string) =
         Moment.Lang(lang)
-        let m = new Moment()
+        let now = new Moment()
         let diff = Duration(-4, "hours").Add(-47, "minutes")
-        let ago = m.Clone().Add(diff)
+        let ago = now.Clone().Add(diff)
         let zones =
             [
                 "Cairo", "Africa/Cairo"
@@ -21,13 +21,13 @@ module Main =
         Div [
             yield H1 [Text lang]
             yield P [
-                Text ("Local: " + m.Format("LLL"))
+                Text ("Local: " + now.Format("LLL"))
                 Br [] :> _
                 Text (diff.Humanize(true) + ": " + ago.Format("LLL"))
             ]
             for showName, zoneName in zones do
                 yield P [
-                    Text (showName + ": " + m.Tz(ZoneName(zoneName)).Format("LLL"))
+                    Text (showName + ": " + now.Tz(ZoneName(zoneName)).Format("LLL"))
                     Br [] :> _
                     Text (diff.Humanize(true) + ": " + ago.Tz(ZoneName(zoneName)).Format("LLL"))
                 ]
