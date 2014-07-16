@@ -57,3 +57,14 @@ moment().tz("America/New_York")
 ```fsharp
 Moment().Tz(ZoneName("America/New_York"))
 ```
+
+## System.DateTime conversion
+
+WebSharper.Moment also comes with the following convenience facilities to
+convert between `Moment` and `System.DateTime` types:
+
+```fsharp
+type Moment =
+    new : System.DateTime -> Moment
+    member ToDotNet : unit -> System.DateTime
+```

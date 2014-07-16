@@ -167,6 +167,8 @@ module Definition =
             "tz" => T<int[]>?date * ZoneName ^-> MomentWithTzT
             "tz" => MomentT * ZoneName ^-> MomentWithTzT
             "tz" => T<Date> * ZoneName ^-> MomentWithTzT
+            Constructor (T<System.DateTime>?d)
+            |> WithInline "moment($d)"
          ]
          |+> Protocol [
             "clone" => T<unit> ^-> MomentT
@@ -240,6 +242,8 @@ module Definition =
             "isDSTShifted" => T<unit> ^-> T<bool>
             "lang" => T<string> ^-> MomentT
             "tz" => ZoneName ^-> MomentWithTzT
+            "toDotNet" => T<unit> ^-> T<System.DateTime>
+            |> WithInline "+$0"
         ]
 
     let MomentWithTz =
