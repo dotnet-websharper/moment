@@ -2,7 +2,7 @@
 open IntelliFactory.Build
 
 let bt =
-    BuildTool().PackageId("WebSharper.Moment", "2.5")
+    BuildTool().PackageId("WebSharper.Moment", "3.0-alpha")
         .References(fun r -> [r.Assembly "System.Web"])
 
 let main =
