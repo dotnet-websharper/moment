@@ -1,14 +1,14 @@
-﻿namespace IntelliFactory.WebSharper.Moment.Tests
+﻿namespace WebSharper.Moment.Tests
 
-open IntelliFactory.WebSharper
+open WebSharper
 
 [<JavaScript>]
 module Main =
-    open IntelliFactory.WebSharper.Html
-    open IntelliFactory.WebSharper.Moment
+    open WebSharper.Html.Client
+    open WebSharper.Moment
 
     let Sample (lang:string) =
-        Moment.Lang(lang)
+        Moment.Locale(lang)
         let now = new Moment()
         let diff = Duration(-4, "hours").Add(-47, "minutes")
         let ago = now.Clone().Add(diff)
@@ -46,13 +46,13 @@ type Samples() =
     override this.Body = Main.Samples() :> _
 
 
-open IntelliFactory.WebSharper.Sitelets
+open WebSharper.Sitelets
 
 type Action = | Index
 
 module Site =
 
-    open IntelliFactory.Html
+    open WebSharper.Html.Server
 
     let HomePage =
         Content.PageContent <| fun ctx ->

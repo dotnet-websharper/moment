@@ -1,12 +1,12 @@
-﻿namespace IntelliFactory.WebSharper.MomentExtension
+﻿namespace WebSharper.MomentExtension
 
-open IntelliFactory.WebSharper.EcmaScript
-open IntelliFactory.WebSharper.InterfaceGenerator
+open WebSharper.JavaScript
+open WebSharper.InterfaceGenerator
 
 module Res =
 
     let Js =
-        Resource "Js" "moment-with-langs.min.js"
+        Resource "Js" "moment-with-locales.min.js"
 
     let TzJs =
         Resource "TimezoneJs" "moment-timezone-with-data.min.js"
@@ -15,12 +15,11 @@ module Res =
 module Definition =
 
     // http://momentjs.com/docs/
-    let MomentT = Type.New()
-    let MomentWithTzT = Type.New()
+    let MomentT = Class "moment"
 
     let ParsingFlags =
         Class "moment.parsingFlags"
-        |+> [
+        |+> Static [
             "overflow" =? T<int>
             "invalidMonth" =? T<string>
             "empty" => T<bool>
@@ -32,16 +31,15 @@ module Definition =
         ]
 
     let Duration =
-        let Duration = Type.New()
-        Class "moment.duration"
-        |=> Duration
-        |+> [
+        let Duration = Class "moment.duration"
+        Duration
+        |+> Static [
             Constructor (T<int>)
             Constructor (T<int> * T<string>)
             Constructor (T<string>)
             Constructor (T<obj>)
         ]
-        |+> Protocol [
+        |+> Instance [
             "humanize" => T<unit> ^-> T<string>
             "humanize" => T<bool> ^-> T<string>
             "milliseconds" => T<unit> ^-> T<int>
@@ -64,11 +62,12 @@ module Definition =
             "subtract" => Duration ^-> Duration
             "as" => T<string> ^-> T<int>
             "get" => T<string> ^-> T<int>
+            "toJSON" => T<unit> ^-> T<string>
         ]
 
     let LocaleData =
         Class "moment.localeData"
-        |+> Protocol [
+        |+> Instance [
             "months" => MomentT ^-> T<string>
             "monthsShort" => MomentT ^-> T<string>
             "monthsParse" => T<string> ^-> T<int>
@@ -87,15 +86,17 @@ module Definition =
             "postformat" => T<string> ^-> T<string>
             "week" => MomentT ^-> T<int>
             "invalidDate" => T<unit> ^-> T<string>
+            "firstDayOfWeek" => T<unit> ^-> T<int>
+            "firstDayOfYear" => T<unit> ^-> T<int>
         ]
 
     let ZoneName =
         Class "moment.ZoneName"
-        |+> [
+        |+> Static [
             Constructor (T<string>?zone)
             |> WithInline "$zone"
         ]
-        |+> Protocol [
+        |+> Instance [
             "name" =? T<string>
             |> WithGetterInline "$0"
         ]
@@ -104,7 +105,7 @@ module Definition =
     let Zone =
         Class "moment.tz.Zone"
         |> Requires [Res.TzJs]
-        |+> Protocol [
+        |+> Instance [
             "name" =? ZoneName
             "abbrs" =? T<string[]>
             "untils" =? T<int[]>
@@ -114,84 +115,113 @@ module Definition =
             "parse" => T<int> ^-> T<int>
         ]
 
+    let UnpackedBundle =
+        Pattern.Config "moment.tz.unpackedBundle"
+            {
+                Required = []
+                Optional =
+                    [
+                        "zones", Type.ArrayOf Zone
+                        "links", T<string[]>
+                        "version", T<string>
+                    ]
+            }
+
     let Tz =
         Class "moment.tz"
         |> Requires [Res.TzJs]
-        |+> [
+        |+> Static [
             "add" => ZoneName ^-> T<unit>
             "add" => T<string[]> ^-> T<unit>
             "link" => T<string> ^-> T<unit>
             "link" => T<string[]> ^-> T<unit>
-            "load" => T<obj> ^-> T<unit>
+            "load" => UnpackedBundle ^-> T<unit>
             "zone" => ZoneName ^-> Zone
             "names" => T<unit> ^-> Type.ArrayOf ZoneName
+            "setDefault" => T<string> ^-> T<unit>
+
+            "pack" => Zone?unpacked ^-> T<string>
+            "unpack" => T<string>?packed ^-> Zone
+            "packBase60" => T<int> ^-> T<string>
+            "unpackBase60" => T<string> ^-> T<int>
+            "createLinks" => UnpackedBundle ^-> UnpackedBundle
+            "filterYears" => UnpackedBundle * T<int>?fromYear * T<int>?toYear ^-> UnpackedBundle
+            "filterLinkPack" => UnpackedBundle * T<int>?fromYear * T<int>?toYear ^-> T<string>
         ]
 
     let Moment =
         let RelaxMoment = MomentT + T<string> + T<int> + T<Date> + T<int[]>
-        Class "moment"
-        |=> MomentT
-        |=> Nested [Tz]
-        |+> [
-            Constructor (T<unit>)
-            |> WithComment "To get the current date and time, just call moment() with no parameters."
-            Constructor (T<string>?d)
-            |> WithComment "When creating a moment from a string, we first check if the string matches known ISO 8601 formats, then fall back to new Date(string) if a known format is not found."
-            Constructor (T<string>?d * T<string>?format * !?T<string>?language * !?T<bool>?strict)
-            |> WithComment "If you know the format of an input string, you can use that to parse a moment."
-            Constructor (T<string>?d * T<string[]>?formats * !?T<string>?language * !?T<bool>?strict)
-            |> WithComment "If you don't know the exact format of an input string, but know it could be one of many, you can use an array of formats."
+        
+        MomentT
+        |+> Static [
             "ISO_8601" =? T<string>
+            |> WithComment "ISO 8601 date format."
+
+            Constructor (T<unit>)
+            |> WithComment "Initialize with the current time."
+            Constructor (T<string>?d)
+            |> WithComment "Check if the string matches known ISO 8601 formats, then fall back to new Date(string) if a known format is not found."
+            Constructor (T<string>?d * T<string>?format * !?T<string>?language * !?T<bool>?strict)
+            |> WithComment "Parse with exact format."
+            Constructor (T<string>?d * T<string[]>?formats * !?T<string>?language * !?T<bool>?strict)
+            |> WithComment "Parse with multiple format choices."
             Constructor T<obj>
-            |> WithComment "You can create a moment by specifying some of the units in an object."
+            |> WithComment "Create a moment by specifying some of the units in an object."
             Constructor T<int>?timestamp
-            |> WithComment "Similar to new Date(Number), you can create a moment by passing an integer value representing the number of milliseconds since the Unix Epoch (Jan 1 1970 12AM UTC)."
-            "unix" => T<int> ^-> MomentT
-            |> WithComment "To create a moment from a Unix timestamp (seconds since the Unix Epoch), use moment.unix(Number)."
+            |> WithComment "Create a moment by passing an the number of milliseconds since the Unix Epoch (Jan 1 1970 12AM UTC)."
             Constructor (T<Date>?d)
-            |> WithComment "You can create a Moment with a pre-existing native Javascript Date object."
+            |> WithComment "Create a Moment with a pre-existing native Javascript Date object."
             Constructor (T<int[]>?d)
-            |> WithComment "You can create a moment with an array of numbers that mirror the parameters passed to new Date()"
-            Constructor T<string>
-            |> WithComment "ASP.NET returns dates in JSON as /Date(1198908717056)/ or /Date(1198908717056-0700)/"
+            |> WithComment "Create a moment with an array of numbers that mirror the parameters passed to new Date()."
             Constructor (MomentT?d)
-            |> WithComment "All moments are mutable. If you want a clone of a moment, you can do so explicitly or implicitly."
+            |> WithComment "Copy constructor."
+
+            "unix" => T<int> ^-> MomentT
+            |> WithComment "Create a moment from a Unix timestamp (seconds since the Unix Epoch)."
 
             "utc" => T<unit>?d ^-> MomentT
-            |> WithComment "If you want to parse or display a moment in UTC, you can use moment.utc() instead of moment()."
+            |> WithComment "Current UTC time."
             "utc" => T<int>?d ^-> MomentT
-            |> WithComment "If you want to parse or display a moment in UTC, you can use moment.utc() instead of moment()."
+            |> WithComment "Create a moment by passing an the number of milliseconds since the Unix Epoch (Jan 1 1970 12AM UTC) in UTC."
             "utc" => T<int[]>?d ^-> MomentT
-            |> WithComment "If you want to parse or display a moment in UTC, you can use moment.utc() instead of moment()."
+            |> WithComment "Create a moment with an array of numbers that mirror the parameters passed to new Date() in UTC."
             "utc" => T<string>?d ^-> MomentT
-            |> WithComment "If you want to parse or display a moment in UTC, you can use moment.utc() instead of moment()."
+            |> WithComment "Check if the string matches known ISO 8601 formats, then fall back to new Date(string) if a known format is not found."
             "utc" => T<string>?d * T<string>?format ^-> MomentT
-            |> WithComment "If you want to parse or display a moment in UTC, you can use moment.utc() instead of moment()."
+            |> WithComment "Create an UTC moment."
             "utc" => T<string>?d * T<string[]>?formats ^-> MomentT
-            |> WithComment "If you want to parse or display a moment in UTC, you can use moment.utc() instead of moment()."
+            |> WithComment "Create an UTC moment."
             "utc" => T<string>?d * T<string>?format * T<string>?language ^-> MomentT
-            |> WithComment "If you want to parse or display a moment in UTC, you can use moment.utc() instead of moment()."
+            |> WithComment "Create an UTC moment."
             "utc" => MomentT?d ^-> MomentT
-            |> WithComment "If you want to parse or display a moment in UTC, you can use moment.utc() instead of moment()."
+            |> WithComment "Create an UTC moment."
             "utc" => T<Date>?d ^-> MomentT
-            |> WithComment "If you want to parse or display a moment in UTC, you can use moment.utc() instead of moment()."
+            |> WithComment "Create an UTC moment."
 
             "parseZone" => T<string>?d ^-> MomentT
-            |> WithComment "Moment normally interprets input times as local times (or UTC times if moment.utc() is used). However, often the input string itself contains time zone information. #parseZone parses the time and then sets the zone according to the input string."
+            |> WithComment "Parses the time and then sets the zone according to the input string."
 
             "max" => !+MomentT ^-> MomentT
-            |> WithComment "Returns the maximum (most distant past) of the given moment instances."
+            |> WithComment "Returns the maximum (most distant future) of the given moment instances."
             "min" => !+MomentT ^-> MomentT
             |> WithComment "Returns the minimum (most distant past) of the given moment instances."
+
             Generic - fun t -> "isMoment" => t ^-> T<bool>
-            "locale" => T<unit> ^-> MomentT
-            |> WithComment "By default, Moment.js comes with English locale strings. If you need other locales, you can load them into Moment.js for later use."
-            "locale" => T<string> ^-> MomentT
-            |> WithComment "By default, Moment.js comes with English locale strings. If you need other locales, you can load them into Moment.js for later use."
-            "locale" => T<string[]> ^-> MomentT
-            |> WithComment "By default, Moment.js comes with English locale strings. If you need other locales, you can load them into Moment.js for later use."
-            "locale" => T<string> * T<obj> ^-> MomentT
-            |> WithComment "By default, Moment.js comes with English locale strings. If you need other locales, you can load them into Moment.js for later use."
+            |> WithComment "Check if the parameter is a moment object."
+            Generic - fun t -> "isDate" => t ^-> T<bool>
+            |> WithComment "Check if the parameter is a native js Date object."
+
+            "locale" => T<unit> ^-> T<string>
+            |> WithComment "Get the current global locale."
+            "locale" => T<string> ^-> T<unit>
+            |> WithComment "Sets the global locale."
+            "locale" => T<string[]> ^-> T<unit>
+            |> WithComment "Sets the global locale."
+            "locale" => T<string> * T<obj> ^-> T<unit>
+            |> WithComment "Sets the global locale."
+
+            "localeData" => T<unit> ^-> LocaleData
+            "localeData" => T<string> ^-> LocaleData
 
             "months" => (T<unit> + T<string>) ^-> T<string[]>
             "months" => (!? T<string>?format * T<int>) ^-> T<string>
@@ -199,7 +229,7 @@ module Definition =
             "monthsShort" => (!? T<string>?format * T<int>) ^-> T<string>
             "weekdays" => T<unit> ^-> T<string[]>
             "weekdays" => T<int> ^-> T<string>
-            |> WithComment "Currently, weekdays always have Sunday as index 0, regardless of the local first day of the week."
+            |> WithComment "Weekdays always have Sunday as index 0, regardless of the local first day of the week."
             "weekdaysShort" => T<unit> ^-> T<string[]>
             "weekdaysShort" => T<int> ^-> T<string>
             "weekdaysMin" => T<unit> ^-> T<string[]>
@@ -209,19 +239,27 @@ module Definition =
             "normalizeUnits" => T<string> ^-> T<string>
             "invalid" => T<unit> ^-> MomentT
             "invalid" => T<obj> ^-> MomentT
-            "tz" => T<string>?date * ZoneName ^-> MomentWithTzT
-            "tz" => T<string>?date * T<string>?format * ZoneName ^-> MomentWithTzT
-            "tz" => T<int>?timestamp * ZoneName ^-> MomentWithTzT
-            "tz" => T<int[]>?date * ZoneName ^-> MomentWithTzT
-            "tz" => MomentT * ZoneName ^-> MomentWithTzT
-            "tz" => T<Date> * ZoneName ^-> MomentWithTzT
             Constructor (T<System.DateTime>?d)
             |> WithInline "moment($d)"
+
+            "tz" => T<unit> * ZoneName?timeZone ^-> MomentT
+            "tz" => T<string>?d * ZoneName?timeZone ^-> MomentT
+            "tz" => T<string>?d * T<string>?format * !?T<string>?language * !?T<bool>?strict * ZoneName?timeZone ^-> MomentT
+            "tz" => T<string>?d * T<string[]>?formats * !?T<string>?language * !?T<bool>?strict * ZoneName?timeZone ^-> MomentT
+            "tz" => T<obj> * ZoneName?timeZone ^-> MomentT
+            "tz" => T<int>?timestamp * ZoneName?timeZone ^-> MomentT
+            "tz" => T<Date>?d * ZoneName?timeZone ^-> MomentT
+            "tz" => T<int[]>?d * ZoneName?timeZone ^-> MomentT
+            "tz" => T<string> * ZoneName?timeZone ^-> MomentT
+            "tz" => MomentT?d * ZoneName?timeZone ^-> MomentT
+            "tz" => T<System.DateTime>?d * ZoneName?timeZone ^-> MomentT
+            |> WithInline "moment.tz($d, $timeZone)"
          ]
-         |+> Protocol [
+         |+> Instance [
             "isValid" => T<unit> ^-> T<bool>
             |> WithComment "Moment applies stricter initialization rules than the Date constructor."
             "invalidAt" => T<unit> ^-> T<int>
+            "parsingFlags" => T<unit> ^-> ParsingFlags
             "millisecond" => (T<unit> + T<int>) ^-> T<int>
             "milliseconds" => (T<unit> + T<int>) ^-> T<int>
             "second" => (T<unit> + T<int>) ^-> T<int>
@@ -253,33 +291,50 @@ module Definition =
             "get" => T<string> ^-> T<int>
             "set" => T<string> * T<int> ^-> MomentT
             |> WithComment "String setter."
+            "set" => T<obj> ^-> MomentT
+            |> WithComment "Object setter."
+            "clone" => T<unit> ^-> MomentT
+
             "add" => T<string> * T<int> ^-> MomentT
+            |> ObsoleteWithMessage "Deprecated in 2.8.0. Please use Add(number, period) instead."
             |> WithComment "Mutates the original moment by adding time."
             "add" => T<int> * T<string> ^-> MomentT
-            |> WithComment "Mutates the original moment by adding time."
-            "add" => T<string> * T<string> ^-> MomentT
             |> WithComment "Mutates the original moment by adding time."
             "add" => Duration ^-> MomentT
             |> WithComment "Mutates the original moment by adding time."
             "add" => T<obj> ^-> MomentT
             |> WithComment "Mutates the original moment by adding time."
             "subtract" => T<string> * T<int> ^-> MomentT
+            |> ObsoleteWithMessage "Deprecated in 2.8.0. Please use Subtract(number, period) instead."
+            |> WithComment "Mutates the original moment by subtracting time."
             "subtract" => T<int> * T<string> ^-> MomentT
-            "subtract" => T<string> * T<string> ^-> MomentT
+            |> WithComment "Mutates the original moment by subtracting time."
             "subtract" => Duration ^-> MomentT
+            |> WithComment "Mutates the original moment by subtracting time."
             "subtract" => T<obj> ^-> MomentT
             |> WithComment "Mutates the original moment by subtracting time."
             "startOf" => T<string>?unit ^-> MomentT
+            |> WithComment "Mutates the original moment by setting it to the start of a unit of time."
             "endOf" => T<string>?unit ^-> MomentT
+            |> WithComment "Mutates the original moment by setting it to the end of a unit of time."
             "local" => T<unit> ^-> MomentT
             "utc" => T<unit> ^-> MomentT
+            "utcOffset" => T<unit> ^-> T<int>
+            |> WithComment "Get the utc offset in minutes."
+            "utcOffset" => (T<int> + T<string>)?offset ^-> T<int>
+            |> WithComment "Set the utc offset."
             "zone" => T<unit> ^-> T<int>
+            |> ObsoleteWithMessage "Deprecated in 2.9.0. Use utcOffset instead."
             "zone" => (T<int> + T<string>)?offset ^-> MomentT
+            |> ObsoleteWithMessage "Deprecated in 2.9.0. Use utcOffset instead."
             "format" => T<unit> ^-> T<string>
             "format" => T<string>?format ^-> T<string>
             "fromNow" => T<unit> ^-> T<string>
             "fromNow" => T<bool>?withoutSuffix ^-> T<string>
             "from" => RelaxMoment * !?T<bool>?withoutSuffix ^-> T<string>
+            "toNow" => T<unit> ^-> T<string>
+            "toNow" => T<bool>?withoutPrefix ^-> T<string>
+            "to" => RelaxMoment * !?T<bool>?withoutSuffix ^-> T<string>
             "calendar" => T<unit> ^-> T<string>
             "calendar" => RelaxMoment?referenceTime ^-> T<string>
             "diff" => RelaxMoment ^-> T<int>
@@ -293,28 +348,46 @@ module Definition =
             "toJSON" => T<unit> ^-> T<obj>
             "toISOString" => T<unit> ^-> T<string>
             "isBefore" => RelaxMoment * !?T<string>?unit ^-> T<bool>
+            |> WithComment "Check if a moment is before another moment."
             "isSame" => RelaxMoment * !?T<string>?unit ^-> T<bool>
+            |> WithComment "Check if a moment is the same as another moment."
             "isAfter" => RelaxMoment * !?T<string>?unit ^-> T<bool>
+            |> WithComment "Check if a moment is after another moment."
+            "isBetween" => RelaxMoment * RelaxMoment * !?T<string>?unit ^-> T<bool>
+            |> WithComment "Check if a moment is between two other moments, optionally looking at unit scale (minutes, hours, days, etc)."
             "isLeapYear" => T<unit> ^-> T<bool>
             "isDST" => T<unit> ^-> T<bool>
+            |> WithComment "Checks if the current moment is in daylight saving time."
             "isDSTShifted" => T<unit> ^-> T<bool>
+            |> WithComment "Checks if the date has been moved by a DST."
+
             "locale" => T<string> ^-> MomentT
+            |> WithComment "Sets the local locale."
             "locale" => T<string[]> ^-> MomentT
+            |> WithComment "Sets the local locale."
             "locale" => T<string> * T<obj> ^-> MomentT
+            |> WithComment "Sets the local locale."
+
+            "localeData" => T<unit> ^-> LocaleData
+            "localeData" => T<string> ^-> LocaleData
+
+            "tz" => ZoneName ^-> MomentT
         ]
 
     let Assembly =
         Assembly [
-            Namespace "IntelliFactory.WebSharper.Moment.Resources" [
+            Namespace "WebSharper.Moment.Resources" [
                 Res.Js.AssemblyWide()
                 Res.TzJs
             ]
-            Namespace "IntelliFactory.WebSharper.Moment" [
+            Namespace "WebSharper.Moment" [
                 ParsingFlags
                 Duration
                 LocaleData
                 Zone
                 ZoneName
+                UnpackedBundle
+                Tz
                 Moment
             ]
         ]

@@ -1,9 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Moment", "IntelliFactory.WebSharper.Moment\IntelliFactory.WebSharper.Moment.fsproj", "{730AE40A-001C-4137-972D-898DC7C2BF0A}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebSharper.Moment", "WebSharper.Moment\WebSharper.Moment.fsproj", "{730AE40A-001C-4137-972D-898DC7C2BF0A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Moment.Tests", "IntelliFactory.WebSharper.Moment.Tests\IntelliFactory.WebSharper.Moment.Tests.fsproj", "{BB42AD3F-9110-4D95-A23F-36B4F2F900FA}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebSharper.Moment.Tests", "WebSharper.Moment.Tests\WebSharper.Moment.Tests.fsproj", "{BB42AD3F-9110-4D95-A23F-36B4F2F900FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
