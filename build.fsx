@@ -14,7 +14,11 @@ let main =
 let test =
     bt.WebSharper.HtmlWebsite("WebSharper.Moment.Tests")
         .SourcesFromProject()
-        .References(fun r -> [r.Project main])
+        .References(fun r -> 
+            [
+                r.NuGet("WebSharper.Html").Reference()
+                r.Project main
+            ])
 
 bt.Solution [
     main
