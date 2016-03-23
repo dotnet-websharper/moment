@@ -8,6 +8,7 @@
     <ProjectGuid>{730ae40a-001c-4137-972d-898dc7c2bf0a}</ProjectGuid>
     <OutputType>Library</OutputType>
     <Name>WebSharper.Moment</Name>
+    <WebSharperProject>Extension</WebSharperProject>
     <RootNamespace>$(Name)</RootNamespace>
     <AssemblyName>WebSharper.Moment</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
