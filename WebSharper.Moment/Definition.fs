@@ -323,6 +323,7 @@ module Definition =
             |> WithComment "Mutates the original moment by setting it to the end of a unit of time."
             "local" => T<unit> ^-> MomentT
             "utc" => T<unit> ^-> MomentT
+            |> WithSourceName "ToUtc"
             "utcOffset" => T<unit> ^-> T<int>
             |> WithComment "Get the utc offset in minutes."
             "utcOffset" => (T<int> + T<string>)?offset ^-> T<int>
@@ -379,7 +380,9 @@ module Definition =
             |> WithComment "Sets the local locale."
 
             "localeData" => T<unit> ^-> LocaleData
+            |> WithSourceName "ToLocaleData"
             "localeData" => T<string> ^-> LocaleData
+            |> WithSourceName "ToLocaleData"
 
             "tz" => T<string> ^-> MomentT
             "zoneAbbr" => T<unit> ^-> T<string>
