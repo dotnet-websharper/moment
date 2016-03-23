@@ -27,9 +27,9 @@ module Main =
             ]
             for showName, zoneName in zones do
                 yield P [
-                    Text (showName + ": " + now.Tz(ZoneName(zoneName)).Format("LLL"))
+                    Text (showName + ": " + now.Tz(zoneName).Format("LLL"))
                     Br [] :> _
-                    Text (diff.Humanize(true) + ": " + ago.Tz(ZoneName(zoneName)).Format("LLL"))
+                    Text (diff.Humanize(true) + ": " + ago.Tz(zoneName).Format("LLL"))
                 ]
         ]
 
