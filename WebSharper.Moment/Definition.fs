@@ -259,6 +259,7 @@ module Definition =
             "tz" => T<System.DateTime>?d * T<string>?timeZone ^-> MomentT
             |> WithInline "moment.tz($d, $timeZone)"
          ]
+         |> Requires [Res.TzJs]
          |+> Instance [
             "isValid" => T<unit> ^-> T<bool>
             |> WithComment "Moment applies stricter initialization rules than the Date constructor."

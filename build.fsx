@@ -27,10 +27,10 @@ bt.Solution [
     bt.NuGet.CreatePackage()
         .Configure(fun c ->
             { c with
-                Title = Some "WebSharper.Moment-2.10.3"
+                Title = Some "WebSharper.Moment-2.12.0"
                 LicenseUrl = Some "http://websharper.com/licensing"
                 ProjectUrl = Some "https://github.com/intellifactory/websharper.moment"
-                Description = "WebSharper Extensions for Moment.js 2.10.3"
+                Description = "WebSharper Extensions for Moment.js 2.12.0"
                 RequiresLicenseAcceptance = true })
         .Add(main)
 
