@@ -3,7 +3,7 @@ open IntelliFactory.Build
 
 let bt =
     BuildTool().PackageId("WebSharper.Moment")
-        .VersionFrom("WebSharper")
+        .VersionFrom("WebSharper", versionSpec = "(,4.0)")
         .WithFramework(fun fw -> fw.Net45)
 
 let main =
@@ -16,7 +16,7 @@ let test =
         .SourcesFromProject()
         .References(fun r -> 
             [
-                r.NuGet("WebSharper.Html").Reference()
+                r.NuGet("WebSharper.Html").Version("(,4.0)").Reference()
                 r.Project main
             ])
 
