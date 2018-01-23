@@ -1,7 +1,13 @@
-[.]vs
-(bin|obj)/(Debug|Release)
-[.]build
-[.](suo|user)$
-^build/
-^packages/
-^tools/packages/
+syntax: glob
+
+.vs
+bin/
+obj/
+build
+*.suo
+build/
+packages/
+paket-files/
+.fake/
+.vscode/
+nuget/*.paket.template
