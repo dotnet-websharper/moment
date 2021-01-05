@@ -11,9 +11,8 @@ description
 tags
     Web JavaScript F# C#
 files
-    ../WebSharper.Moment/bin/Release/net461/WebSharper.Moment.dll ==> lib/net461
-    ../WebSharper.Moment/bin/Release/net461/WebSharper.Moment.xml ==> lib/net461
     ../WebSharper.Moment/bin/Release/netstandard2.0/WebSharper.Moment.dll ==> lib/netstandard2.0
     ../WebSharper.Moment/bin/Release/netstandard2.0/WebSharper.Moment.xml ==> lib/netstandard2.0
 dependencies
-        WebSharper ~> LOCKEDVERSION:[3]
+    framework: netstandard2.0
+            WebSharper ~> LOCKEDVERSION:[3]
