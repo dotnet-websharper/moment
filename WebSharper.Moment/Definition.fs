@@ -37,17 +37,18 @@ module Definition =
 
     let ParsingFlags =
         Class "moment.parsingFlags"
-        |+> Static [
+        |> WithSourceName "ParsingFlags"
+        |+> Instance [
             "overflow" =? T<int>
             "invalidMonth" =? T<string>
-            "empty" => T<bool>
-            "nullInput" => T<bool>
-            "invalidFormat" => T<bool>
-            "userInvalidated" => T<bool>
-            "meridiem" => T<string>
-            // "parsedDateParts" => TODO
-            "unusedTokens" => T<string[]>
-            "unusedInput" => T<string[]>
+            "empty" =? T<bool>
+            "nullInput" =? T<bool>
+            "invalidFormat" =? T<bool>
+            "userInvalidated" =? T<bool>
+            "meridiem" =? T<string>
+            "parsedDateParts" =? T<obj[]>
+            "unusedTokens" =? T<string[]>
+            "unusedInput" =? T<string[]>
         ]
 
     let Duration =
@@ -97,6 +98,7 @@ module Definition =
 
     let LocaleData =
         Class "moment.localeData"
+        |> WithSourceName "LocaleData"
         |+> Instance [
             "months" => !?MomentT ^-> T<string>
             "monthsShort" => !?MomentT ^-> T<string>
@@ -138,6 +140,7 @@ module Definition =
     let Zone =
         Class "moment.tz.Zone"
         |> Requires [Res.TzJs]
+        |> WithSourceName "Zone"
         |+> Instance [
             "name" =? T<string>
             "abbrs" =? T<string[]>
@@ -159,6 +162,7 @@ module Definition =
                         "version", T<string>
                     ]
             }
+        |> WithSourceName "UnpackedBundle"
 
     let Tz =
         Class "moment.tz"
@@ -210,10 +214,16 @@ module Definition =
             |> WithComment "Initialize with the current time."
             Constructor (T<string>?d)
             |> WithComment "Check if the string matches known ISO 8601 formats, then fall back to new Date(string) if a known format is not found, or checking if the string matches with the JSON date."
-            Constructor (T<string>?d * T<string>?format * !?(T<string> + T<string[]>)?language * !?T<bool>?strict)
-            |> WithComment "Parse with exact format."
-            Constructor (T<string>?d * T<string[]>?formats * !?T<string>?language * !?T<bool>?strict)
-            |> WithComment "Parse with multiple format choices."
+            Constructor (T<string>?d * T<string>?format * !?T<bool>?strict)
+            |> WithComment "Parse with exact format (with an optional strict parameter)."
+            Constructor (T<string>?d * T<string>?format * T<string>?language * !?T<bool>?strict)
+            |> WithComment "Parse with exact format (with optional locale and strict parameters)."
+            Constructor (T<string>?d * T<string>?format * T<string[]>?languages)
+            |> WithComment "Parse with exact format (with optional locales)."
+            Constructor (T<string>?d * T<string[]>?formats * !?T<bool>?strict)
+            |> WithComment "Parse with multiple format choices (with an optional strict parameter)."
+            Constructor (T<string>?d * T<string[]>?formats * T<string>?language * !?T<bool>?strict)
+            |> WithComment "Parse with multiple format choices (with optional locale and strict parameter)."
             Constructor T<obj>
             |> WithComment "Create a moment by specifying some of the units in an object."
             Constructor T<int>?timestamp
@@ -224,6 +234,8 @@ module Definition =
             |> WithComment "Create a moment with an array of numbers that mirror the parameters passed to new Date()."
             Constructor (MomentT?d)
             |> WithComment "Copy constructor."
+            Constructor (T<int>?d * T<string>?unit)
+            |> WithComment "Create a moment by specifying the unit."
             Constructor (T<System.DateTime>?d)
             |> WithInline "moment($d)"
 
@@ -244,7 +256,7 @@ module Definition =
             |> WithComment "Create an UTC moment."
             "utc" => T<string>?d * T<string>?format * T<string>?language * !?T<bool>?strict ^-> MomentT
             |> WithComment "Create an UTC moment."
-            "utc" => T<string>?d * T<string>?format * T<string[]>?language ^-> MomentT
+            "utc" => T<string>?d * T<string>?format * T<string[]>?languages ^-> MomentT
             |> WithComment "Create an UTC moment."
             "utc" => MomentT?d ^-> MomentT
             |> WithComment "Create an UTC moment."
@@ -364,6 +376,7 @@ module Definition =
             "set" => T<obj> ^-> MomentT
             |> WithComment "Object setter."
             "clone" => T<unit> ^-> MomentT
+            |> WithComment "Clones the Moment instance."
 
             "add" => T<string> * T<int> ^-> MomentT
             |> ObsoleteWithMessage "Deprecated in 2.8.0. Please use Add(number, period) instead."
