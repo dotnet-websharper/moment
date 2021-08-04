@@ -27,7 +27,7 @@ module Res =
         Resource "Js" "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
 
     let TzJs =
-        Resource "TimezoneJs" "https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone.min.js"
+        Resource "TimezoneJs" "https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data.min.js"
         |> Requires [Js]
 
 module Definition =
