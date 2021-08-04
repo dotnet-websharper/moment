@@ -144,7 +144,7 @@ module Definition =
             "untils" =? T<int[]>
             "offsets" =? T<int[]>
             "abbr" => T<int> ^-> T<string>
-            "offset" => T<int> ^-> T<int>
+            "utcOffset" => T<int> ^-> T<int>
             "parse" => T<int> ^-> T<int>
         ]
 
@@ -162,9 +162,9 @@ module Definition =
 
     let Tz =
         Class "moment.tz"
+        |> WithSourceName "TimeZone"
         |> Requires [Res.TzJs]
         |+> Static [
-            //"add" => T<string> ^-> T<unit>
             "add" => T<string[]> ^-> T<unit>
             "add" => T<string> ^-> T<unit>
             "link" => T<string> ^-> T<unit>
@@ -186,7 +186,8 @@ module Definition =
     let RelaxMoment = MomentT + T<string> + T<int> + T<Date> + T<int[]>
 
     let HTML5ConstantFormats =
-        Class "HTML5ConstantFormats"
+        Class "moment.HTML5_FMT"
+        |> WithSourceName "HTML5ConstantFormats"
         |+> Static [
             "DATETIME_LOCAL" =? T<string>
             "DATETIME_LOCAL_SECONDS" =? T<string>
@@ -203,7 +204,6 @@ module Definition =
         MomentT
         |+> Static [
             "ISO_8601" =? T<string>
-            "HTML5_FMT" =? HTML5ConstantFormats
             |> WithComment "ISO 8601 date format."
 
             Constructor (T<unit>)
@@ -254,11 +254,11 @@ module Definition =
             "parseZone" => !?T<string>?d ^-> MomentT
             |> WithComment "Parses the time and then sets the zone according to the input string."
             "parseZone" => T<string>?d * T<string>?format * !?T<bool>?strict ^-> MomentT
-            |> WithComment "TODO"
+            |> WithComment "Parses the time and format (with an optional strict parameter) and then sets the zone according to the input string."
             "parseZone" => T<string>?d * T<string[]>?formats ^-> MomentT
-            |> WithComment "TODO"
+            |> WithComment "Parses the time and formats and then sets the zone according to the input string."
             "parseZone" => T<string>?d * T<string>?format * T<string>?language * !?T<bool>?strict ^-> MomentT
-            |> WithComment "TODO"
+            |> WithComment "Parses the time, format and locale (with an optional strict parameter) and then sets the zone according to the input string."
 
             "max" => !+MomentT ^-> MomentT
             |> WithComment "Returns the maximum (most distant future) of the given moment instances."
