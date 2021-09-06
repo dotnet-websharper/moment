@@ -23,7 +23,7 @@ open WebSharper
 
 [<JavaScript>]
 module Main =
-    open WebSharper.Html.Client
+    open WebSharper.UI.Html
     open WebSharper.Moment
 
     let Sample (lang:string) =
@@ -37,23 +37,23 @@ module Main =
                 "New York", "America/New_York"
                 "Tokyo", "Asia/Tokyo"
             ]
-        Div [
-            yield H1 [Text lang]
-            yield P [
-                Text ("Local: " + now.Format("LLL"))
-                Br [] :> _
-                Text (diff.Humanize(true) + ": " + ago.Format("LLL"))
+        div [] [
+            yield h1 [] [text lang]
+            yield p [] [
+                text ("Local: " + now.Format("LLL"))
+                br [] [] 
+                text (diff.Humanize(true) + ": " + ago.Format("LLL"))
             ]
             for showName, zoneName in zones do
-                yield P [
-                    Text (showName + ": " + now.Tz(zoneName).Format("LLL"))
-                    Br [] :> _
-                    Text (diff.Humanize(true) + ": " + ago.Tz(zoneName).Format("LLL"))
+                yield p [] [
+                    text (showName + ": " + now.Tz(zoneName).Format("LLL"))
+                    br [] []
+                    text (diff.Humanize(true) + ": " + ago.Tz(zoneName).Format("LLL"))
                 ]
         ]
 
     let Samples() =
-        Div [
+        div [] [
             Sample "en"
             Sample "fr"
         ]
@@ -71,12 +71,12 @@ type Action = | Index
 
 module Site =
 
-    open WebSharper.Html.Server
+    open WebSharper.UI.Html
 
     let HomePage ctx =
         Content.Page(
             Title = "WebSharper MomentJs Tests",
-            Body = [Div [new Samples()]])
+            Body = [div [] [client <@ Main.Samples() @>]])
 
     let Main = Sitelet.Content "/" Index HomePage
 

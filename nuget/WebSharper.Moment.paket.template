@@ -1,19 +1,20 @@
 type file
 id WebSharper.Moment
-authors
-    IntelliFactory
-owners
-    IntelliFactory
-licenseUrl http://websharper.com/licensing
-projectUrl https://github.com/intellifactory/websharper.moment
+authors IntelliFactory
+owners IntelliFactory
+projectUrl https://websharper.com/
+repositoryType git
+repositoryUrl https://github.com/dotnet-websharper/moment/
+licenseUrl https://github.com/dotnet-websharper/moment/blob/master/LICENSE.md
+licenseExpression Apache-2.0
+iconUrl https://github.com/dotnet-websharper/core/raw/websharper50/tools/WebSharper.png
 description
-    WebSharper Extensions for Moment.js 2.10.3
+    WebSharper bindings for moment.js 2.29.1
 tags
     Web JavaScript F# C#
 files
-    ../WebSharper.Moment/bin/Release/net461/WebSharper.Moment.dll ==> lib/net461
-    ../WebSharper.Moment/bin/Release/net461/WebSharper.Moment.xml ==> lib/net461
     ../WebSharper.Moment/bin/Release/netstandard2.0/WebSharper.Moment.dll ==> lib/netstandard2.0
     ../WebSharper.Moment/bin/Release/netstandard2.0/WebSharper.Moment.xml ==> lib/netstandard2.0
 dependencies
-        WebSharper ~> LOCKEDVERSION:[3]
+    framework: netstandard2.0
+            WebSharper ~> LOCKEDVERSION:[3]
