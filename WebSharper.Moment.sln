@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebSharper.Moment", "WebSharper.Moment\WebSharper.Moment.fsproj", "{730AE40A-001C-4137-972D-898DC7C2BF0A}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebSharper.Moment.Tests", "WebSharper.Moment.Tests\WebSharper.Moment.Tests.fsproj", "{BB42AD3F-9110-4D95-A23F-36B4F2F900FA}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{49535496-CBFA-44E4-B198-0B583182569B}"
 	ProjectSection(SolutionItems) = preProject
 		.hgignore = .hgignore
@@ -20,6 +22,10 @@ Global
 		{730AE40A-001C-4137-972D-898DC7C2BF0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{730AE40A-001C-4137-972D-898DC7C2BF0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{730AE40A-001C-4137-972D-898DC7C2BF0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB42AD3F-9110-4D95-A23F-36B4F2F900FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB42AD3F-9110-4D95-A23F-36B4F2F900FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB42AD3F-9110-4D95-A23F-36B4F2F900FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB42AD3F-9110-4D95-A23F-36B4F2F900FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
