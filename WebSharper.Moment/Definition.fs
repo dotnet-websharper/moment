@@ -22,14 +22,6 @@ namespace WebSharper.Moment
 open WebSharper.JavaScript
 open WebSharper.InterfaceGenerator
 
-module Res =
-    let Js =
-        Resource "Js" "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
-
-    let TzJs =
-        Resource "TimezoneJs" "https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data.min.js"
-        |> Requires [Js]
-
 module Definition =
 
     // http://momentjs.com/docs/
@@ -139,7 +131,7 @@ module Definition =
 
     let Zone =
         Class "moment.tz.Zone"
-        |> Requires [Res.TzJs]
+        |> ImportDefault "moment-timezone"
         |> WithSourceName "Zone"
         |+> Instance [
             "name" =? T<string>
@@ -167,7 +159,7 @@ module Definition =
     let Tz =
         Class "moment.tz"
         |> WithSourceName "TimeZone"
-        |> Requires [Res.TzJs]
+        |> ImportDefault "moment-timzone"
         |+> Static [
             "add" => T<string[]> ^-> T<unit>
             "add" => T<string> ^-> T<unit>
@@ -331,7 +323,7 @@ module Definition =
             "tz" => T<System.DateTime>?d * T<string>?timeZone ^-> MomentT
             |> WithInline "moment.tz($d, $timeZone)"
         ]
-        |> Requires [Res.TzJs]
+        |> ImportDefault "moment-timezone"
         |+> Instance [
             "isValid" => T<unit> ^-> T<bool>
             |> WithComment "Moment applies stricter initialization rules than the Date constructor."
@@ -474,10 +466,6 @@ module Definition =
 
     let Assembly =
         Assembly [
-            Namespace "WebSharper.Moment.Resources" [
-                Res.Js.AssemblyWide()
-                Res.TzJs
-            ]
             Namespace "WebSharper.Moment" [
                 ParsingFlags
                 Duration

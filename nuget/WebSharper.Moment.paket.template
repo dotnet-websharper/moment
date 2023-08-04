@@ -14,6 +14,7 @@ tags
 files
     ../WebSharper.Moment/bin/Release/netstandard2.0/WebSharper.Moment.dll ==> lib/netstandard2.0
     ../WebSharper.Moment/bin/Release/netstandard2.0/WebSharper.Moment.xml ==> lib/netstandard2.0
+    ../WebSharper.Moment/WebSharper.Moment.fsproj ==> src/
 dependencies
     framework: netstandard2.0
             WebSharper ~> LOCKEDVERSION:[3]

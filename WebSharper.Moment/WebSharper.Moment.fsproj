@@ -5,6 +5,12 @@
     <WebSharperSourceMap>false</WebSharperSourceMap>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+  <PropertyGroup>
+	<NpmDependencies>
+	  <NpmPackage Name="moment" Version="gt= 2.29.4 lt 2.30.0" ResolutionStrategy="Max" />
+	  <NpmPackage Name="moment-timezone" Version="gt= 0.5.43 lt 0.6.0" ResolutionStrategy="Max" />
+	</NpmDependencies>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Definition.fs" />
   </ItemGroup>
