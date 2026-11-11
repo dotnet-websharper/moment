@@ -5,7 +5,7 @@ owners IntelliFactory
 projectUrl https://websharper.com/
 repositoryType git
 repositoryUrl https://github.com/dotnet-websharper/moment/
-licenseUrl https://github.com/dotnet-websharper/moment/blob/master/LICENSE.md
+licenseUrl https://github.com/dotnet-websharper/moment/blob/main/LICENSE.md
 iconUrl https://github.com/dotnet-websharper/core/raw/websharper50/tools/WebSharper.png
 description
     WebSharper bindings for moment.js 2.31.0+ and moment-timezone 0.6.6+
