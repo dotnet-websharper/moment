@@ -1,70 +1,59 @@
-﻿# Overview
+﻿# WebSharper.Moment
 
-This WebSharper Extension provides a set of classes and functions almost
-identical to the ones documented in [Moment JS](http://momentjs.com). When used
-in WebSharper projects, these stub classes delegate the work to the actual
-classes implemented by the library.
+This WebSharper extension provides classes and functions that mirror the
+[moment.js](https://momentjs.com) and
+[moment-timezone](https://momentjs.com/timezone/) APIs. When used in WebSharper
+projects, these stub classes delegate the work to the actual library.
 
-After adding the reference to the project all the classes can be found
-under the `IntelliFactory.WebSharper.Moment` namespace.
+All types live in the `WebSharper.Moment` namespace:
 
-# Resources
+| Type | JavaScript |
+| --- | --- |
+| `Moment` | `moment` |
+| `Duration` | `moment.duration` |
+| `LocaleData` | `moment.localeData` |
+| `TimeZone` | `moment.tz` |
+| `Zone` | `moment.tz.Zone` |
+| `ParsingFlags` | `moment.parsingFlags` |
+| `UnpackedBundle` | `moment.tz` bundle object |
+| `HTML5ConstantFormats` | `moment.HTML5_FMT` |
 
-Both files of the Moment JS library (`moment.js` and `moment-timezone.js`)
-exist in several versions, depending on the amount of data it contains:
+## Resources
 
-  * `moment.js` has a basic version with only English and an international
-  version with many translations.
+The binding is **npm-based**: it imports the default export of the
+`moment-timezone` package (`import moment from "moment-timezone"`), which also
+provides moment.js. There is no CDN `<script>` and no `Web.config` resource
+override. Add `moment` and `moment-timezone` to your front-end dependencies; the
+binding records them as `NpmDependencies` (`moment >= 2.31.0 < 3.0.0`,
+`moment-timezone >= 0.6.6 < 1.0.0`).
 
-  * `moment-timezone.js` has different versions depending on the number of
-  historical time zone change events it contains.
+moment's locale data is shipped as separate modules. Register the locales you
+need with side-effect imports before using them:
 
-To ensure maximum functionality by default, WebSharper.Moment includes the
-largest version of both these files. If you wish to use a lighter version, you
-can download the desired file from [the Moment JS website](http://momentjs.com),
-add it to your project and add the following to your `Web.config`:
-
-```xml
-<configuration>
-  <appSettings>
-    <!-- to change the moment.js link -->
-    <add key="IntelliFactory.WebSharper.Moment.Resources.Js" value="/path/to/my-moment.js" /> 
-    <!-- to change the moment-timezone.js link -->
-    <add key="IntelliFactory.WebSharper.Moment.Resources.TimezoneJs" value="/path/to/my-moment-timezone.js" /> 
-  </appSettings>
-</configuration>
+```js
+import "moment/locale/fr"
+import "moment/locale/de"
 ```
-
-# Usage
-
-The Moment WebSharper extension is as far as possible a one-to-one
-mapping of Moment JS. Therefore, this documentation will only discuss
-the differences between Moment JS and the WebSharper extension. For a
-complete reference, see [the Moment JS homepage](http://momentjs.com).
 
 ## Differences with the JavaScript API
 
-  * In order to correctly pull the dependency on the Moment Timezone library
-  when the `moment.tz()` method is called, the name of the timezone is wrapped
-  in a `ZoneName` class. Therefore the following JavaScript code:
-
-```javascript
-moment().tz("America/New_York")
-```
-
-  needs to be translated as such in F#:
-
-```fsharp
-Moment().Tz(ZoneName("America/New_York"))
-```
+- **`utc()` is `ToUtc()`.** The instance method that converts a moment to UTC is
+  exposed as `ToUtc()` so it does not clash with the static `Moment.Utc(...)`.
+- **`moment.tz` is `TimeZone`.** The time-zone namespace is exposed as the
+  `TimeZone` class (`TimeZone.Names()`, `TimeZone.Guess()`,
+  `TimeZone.Zone(name)`, …), and `moment.tz.Zone` is the `Zone` type.
+- **`Moment.ISO_8601` is the parsing sentinel**, not a format string. Use a
+  format such as `"YYYY-MM-DDTHH:mm:ssZ"` with `Format`.
+- **moment-timezone 0.6 removed the data-packing helpers** (`pack`,
+  `packBase60`, `createLinks`, `filterYears`, `filterLinkPack`); the binding no
+  longer exposes them.
 
 ## System.DateTime conversion
 
-WebSharper.Moment also comes with the following convenience facilities to
-convert between `Moment` and `System.DateTime` types:
+A `System.DateTime` can be passed to the `Moment` constructor:
 
 ```fsharp
-type Moment =
-    new : System.DateTime -> Moment
-    member ToDotNet : unit -> System.DateTime
+let m = new Moment(System.DateTime.UtcNow)
 ```
+
+Use `ToDate()` to get a JavaScript `Date` back, or `ToISOString()` for a string.

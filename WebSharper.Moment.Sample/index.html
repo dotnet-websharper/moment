@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSharper.Moment — moment.js bindings for F# and C#</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230f766e'/%3E%3Ctext x='8' y='12' font-family='monospace' font-size='9' fill='white' text-anchor='middle'%3Emo%3C/text%3E%3C/svg%3E" />
+    <script>
+        // Apply a previously chosen theme before first paint. Light is the
+        // default; the key is shared with Client.fs (themeStorageKey).
+        try {
+            var t = localStorage.getItem('websharper-moment-theme');
+            if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) { }
+    </script>
+    <link rel="stylesheet" href="site.css" />
+    <!-- moment.js and moment-timezone are bundled from npm; the WebSharper head is folded in here. -->
+    <!-- ws-head -->
+</head>
+<body>
+    <div class="shell">
+        <header class="topbar">
+            <a class="brand" href="./">
+                <span class="brand-mark">mo</span>
+                <span class="brand-text">
+                    <strong>WebSharper.Moment</strong>
+                    <small>moment.js 2 + moment-timezone 0.6 bindings for F# and C#</small>
+                </span>
+            </a>
+            <div class="topbar-actions">
+                <div ws-hole="Nav"></div>
+                <button class="btn ghost" ws-onclick="ToggleTheme" title="Switch between the light and dark theme">
+                    <span>${themeLabel}</span>
+                </button>
+            </div>
+        </header>
+        <main class="content" ws-hole="Page"></main>
+        <footer class="footer">
+            <span>Built with <a href="https://websharper.com" target="_blank" rel="noreferrer">WebSharper</a></span>
+            <span class="dot">&middot;</span>
+            <a href="https://momentjs.com" target="_blank" rel="noreferrer">moment.js 2.31.0</a>
+            <span class="dot">&middot;</span>
+            <a href="https://momentjs.com/timezone/" target="_blank" rel="noreferrer">moment-timezone 0.6.6</a>
+            <span class="dot">&middot;</span>
+            <a href="https://github.com/dotnet-websharper/moment" target="_blank" rel="noreferrer">source</a>
+        </footer>
+    </div>
+    <script src="Scripts/WebSharper.Moment.Sample.min.js"></script>
+</body>
+</html>
