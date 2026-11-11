@@ -182,7 +182,7 @@ dotnet paket pack ./nuget
 
 ## Deployment
 
-Pushing to `master` triggers `.github/workflows/ghpages.yml`, which builds the
+Pushing to `main` triggers `.github/workflows/ghpages.yml`, which builds the
 sample in Release and publishes `dist/` to the `gh-pages` branch via GitHub
 Pages.
 
