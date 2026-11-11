@@ -46,12 +46,18 @@ module Definition =
     let Duration =
         Class "moment.duration"
         |> WithSourceName "Duration"
+        |> ImportDefault "moment-timezone"
         |+> Static [
             Constructor (T<int>)
+            |> WithInline "$import.duration($0)"
             Constructor (T<int> * T<string>)
+            |> WithInline "$import.duration($0, $1)"
             Constructor (T<string>)
+            |> WithInline "$import.duration($0)"
             Constructor (T<obj>)
+            |> WithInline "$import.duration($0)"
             Constructor (T<string> * T<string>)
+            |> WithInline "$import.duration($0, $1)"
         ]
         |+> Instance [
             "humanize" => T<unit> ^-> T<string>
@@ -83,7 +89,6 @@ module Definition =
             "get" => T<string> ^-> T<int>
             "toJSON" => T<unit> ^-> T<string>
             "toISOString" => T<unit> ^-> T<string>
-            "isDuration" => T<obj> ^-> T<bool>
             "clone" => T<unit> ^-> TSelf
             "locale" => T<string> ^-> TSelf
         ]
@@ -131,7 +136,6 @@ module Definition =
 
     let Zone =
         Class "moment.tz.Zone"
-        |> ImportDefault "moment-timezone"
         |> WithSourceName "Zone"
         |+> Instance [
             "name" =? T<string>
@@ -159,24 +163,30 @@ module Definition =
     let Tz =
         Class "moment.tz"
         |> WithSourceName "TimeZone"
-        |> ImportDefault "moment-timzone"
+        |> ImportDefault "moment-timezone"
         |+> Static [
             "add" => T<string[]> ^-> T<unit>
+            |> WithInline "$import.tz.add($0)"
             "add" => T<string> ^-> T<unit>
+            |> WithInline "$import.tz.add($0)"
             "link" => T<string> ^-> T<unit>
+            |> WithInline "$import.tz.link($0)"
             "link" => T<string[]> ^-> T<unit>
+            |> WithInline "$import.tz.link($0)"
             "load" => UnpackedBundle ^-> T<unit>
+            |> WithInline "$import.tz.load($0)"
             "zone" => T<string> ^-> Zone
+            |> WithInline "$import.tz.zone($0)"
             "names" => T<unit> ^-> T<string[]>
+            |> WithInline "$import.tz.names()"
             "setDefault" => T<string> ^-> T<unit>
+            |> WithInline "$import.tz.setDefault($0)"
             "guess" => T<unit> ^-> T<string>
-            "pack" => Zone?unpacked ^-> T<string>
+            |> WithInline "$import.tz.guess()"
             "unpack" => T<string>?packed ^-> Zone
-            "packBase60" => T<int> ^-> T<string>
+            |> WithInline "$import.tz.unpack($0)"
             "unpackBase60" => T<string> ^-> T<int>
-            "createLinks" => UnpackedBundle ^-> UnpackedBundle
-            "filterYears" => UnpackedBundle * T<int>?fromYear * T<int>?toYear ^-> UnpackedBundle
-            "filterLinkPack" => UnpackedBundle * T<int>?fromYear * T<int>?toYear ^-> T<string>
+            |> WithInline "$import.tz.unpackBase60($0)"
         ]
 
     let RelaxMoment = MomentT + T<string> + T<int> + T<Date> + T<int[]>
@@ -184,23 +194,33 @@ module Definition =
     let HTML5ConstantFormats =
         Class "moment.HTML5_FMT"
         |> WithSourceName "HTML5ConstantFormats"
+        |> ImportDefault "moment-timezone"
         |+> Static [
             "DATETIME_LOCAL" =? T<string>
+            |> WithGetterInline "$import.HTML5_FMT.DATETIME_LOCAL"
             "DATETIME_LOCAL_SECONDS" =? T<string>
+            |> WithGetterInline "$import.HTML5_FMT.DATETIME_LOCAL_SECONDS"
             "DATETIME_LOCAL_MS" =? T<string>
+            |> WithGetterInline "$import.HTML5_FMT.DATETIME_LOCAL_MS"
             "DATE" =? T<string>
+            |> WithGetterInline "$import.HTML5_FMT.DATE"
             "TIME" =? T<string>
+            |> WithGetterInline "$import.HTML5_FMT.TIME"
             "TIME_SECONDS" =? T<string>
+            |> WithGetterInline "$import.HTML5_FMT.TIME_SECONDS"
             "TIME_MS" =? T<string>
+            |> WithGetterInline "$import.HTML5_FMT.TIME_MS"
             "WEEK" =? T<string>
+            |> WithGetterInline "$import.HTML5_FMT.WEEK"
             "MONTH" =? T<string>
+            |> WithGetterInline "$import.HTML5_FMT.MONTH"
         ]
 
     let Moment =
         MomentT
         |+> Static [
-            "ISO_8601" =? T<string>
-            |> WithComment "ISO 8601 date format."
+            "ISO_8601" =? T<obj>
+            |> WithComment "The moment.ISO_8601 parsing sentinel (a special value, not a format string)."
 
             Constructor (T<unit>)
             |> WithComment "Initialize with the current time."
@@ -229,7 +249,7 @@ module Definition =
             Constructor (T<int>?d * T<string>?unit)
             |> WithComment "Create a moment by specifying the unit."
             Constructor (T<System.DateTime>?d)
-            |> WithInline "moment($d)"
+            |> WithInline "$import($d)"
 
             "unix" => T<int> ^-> MomentT
             |> WithComment "Create a moment from a Unix timestamp (seconds since the Unix Epoch)."
@@ -273,6 +293,8 @@ module Definition =
             |> WithComment "Check if the parameter is a moment object."
             Generic - fun t -> "isDate" => t ^-> T<bool>
             |> WithComment "Check if the parameter is a native js Date object."
+            "isDuration" => T<obj> ^-> T<bool>
+            |> WithComment "Check if the parameter is a moment Duration object."
 
             "locale" => T<unit> ^-> T<string>
             |> WithComment "Get the current global locale."
@@ -321,7 +343,7 @@ module Definition =
             //"tz" => T<string> * T<string>?timeZone ^-> MomentT same as the second
             "tz" => MomentT?d * T<string>?timeZone ^-> MomentT
             "tz" => T<System.DateTime>?d * T<string>?timeZone ^-> MomentT
-            |> WithInline "moment.tz($d, $timeZone)"
+            |> WithInline "$import.tz($d, $timeZone)"
         ]
         |> ImportDefault "moment-timezone"
         |+> Instance [
@@ -438,7 +460,7 @@ module Definition =
             |> WithComment "Check if a moment is before or the same as another moment."
             "isSameOrAfter" => RelaxMoment * !?T<string>?unit ^-> T<bool>
             |> WithComment "Check if a moment is after or the same as another moment."
-            "isBetween" => RelaxMoment * RelaxMoment * !?T<string>?unit ^-> T<bool>
+            "isBetween" => RelaxMoment?``moment`` * RelaxMoment?``other`` * !?T<string>?unit ^-> T<bool>
             |> WithComment "Check if a moment is between two other moments, optionally looking at unit scale (minutes, hours, days, etc)."
             "isLeapYear" => T<unit> ^-> T<bool>
             "isDST" => T<unit> ^-> T<bool>
